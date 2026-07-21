@@ -4,48 +4,29 @@
 #include <vector>
 #include <cstdlib>
 #include"computer.h"
-using namespace std;
-/*int main()
-{
-	double number1, number2;
-	char operator_zjx;
-	double end=0;
-	cout << "请输入简单运算式子：";
-
-	cin >> number1 >> operator_zjx >> number2;
-
-	if (operator_zjx == '+')
-	{
-		end = add(number1, number2, operator_zjx);
-	}
-
-	if (operator_zjx == '-')
-	{
-		end = minus_zjx(number1, number2, operator_zjx);
-	}
-
-	if (operator_zjx == '*')
-	{
-		end = ride_zjx(number1, number2, operator_zjx);
-	}
-
-	if (operator_zjx == '/')
-	{
-		end = get_zjx(number1, number2, operator_zjx);
-	}
-
-	cout << end << endl;
-
-	return 0;
-}*/
 
 int main()
 {
 	//system("chcp 65001 > nul");
 	Shape* sp;
-	Real_number Rn;
-	sp = &Rn;
-	sp->display();
-	system("pause");
+    Real_number Rn;
+	Complex_number Cn;
+
+	char oper;
+	std::cout<<"按 R 进行实数运算，按 C 进行复数运算: ";
+	std::cin >> oper;
+	if (oper == 'R' || oper == 'r')
+	{
+		sp = &Rn;
+		sp->display();
+		system("pause");
+	}
+
+	if (oper == 'C' || oper == 'c')
+	{
+		sp = &Cn;
+		sp->display();
+		system("pause");
+	}
 	return 0;
 }
