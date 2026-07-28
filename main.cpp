@@ -7,7 +7,7 @@
 
 int main()
 {
-	//system("chcp 65001 > nul");
+	system("chcp 936 > nul");
 	Shape* sp;
     Real_number Rn;
 	Complex_number Cn;
