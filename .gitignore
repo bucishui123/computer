@@ -15,5 +15,10 @@
 *.pdb
 *.obj
 *.ilk
+*.json
+*.slnx
+*.vcxproj
+*.vcxproj.filterse
+*.vcxproj.user
 x64/
 计算器项目/x64/
