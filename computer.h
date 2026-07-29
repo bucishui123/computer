@@ -39,6 +39,8 @@ public:
 	friend std::ostream& operator<<(std::ostream&, const Complex_number&);
 	friend Complex_number operator+(const Complex_number&, const Complex_number&);
 	friend Complex_number operator-(const Complex_number&, const Complex_number&);
+	friend Complex_number operator*(const Complex_number&, const Complex_number&);
+	friend Complex_number operator/(const Complex_number&, const Complex_number&);
 };
 
 //在这里定义函数！
@@ -46,6 +48,8 @@ std::istream& operator>>(std::istream& in, Complex_number& comp);
 std::ostream& operator<<(std::ostream& out, const Complex_number& comp);
 Complex_number operator+(const Complex_number& comp1, const Complex_number& comp2);
 Complex_number operator-(const Complex_number& comp1, const Complex_number& comp2);
+Complex_number operator*(const Complex_number& comp1, const Complex_number& comp2);
+Complex_number operator/(const Complex_number& comp1, const Complex_number& comp2);
 
 //static int precedence(char op);
 //static vector<std::string> pares_real_expression(const std::string& line);
