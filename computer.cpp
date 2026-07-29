@@ -12,9 +12,9 @@ Complex_number::Complex_number(int r, int i) : real(r), imag(i) { /*cout << "OK"
 
 void Real_number::display()
 {
-    // cout<<"====display函数被调用====" << endl;
+    // cout<<"====display运算器====" << endl;
     char input;
-    cout << "按 R 开始计算，按 Q 退出: ";
+    cout << "按 R 开始运算，按 Q 退出: ";
     cin >> input;
 
     if (input == 'Q' || input == 'q')
@@ -84,14 +84,34 @@ Complex_number operator-(const Complex_number &comp1, const Complex_number &comp
     Complex_number Cn(comp1.real - comp2.real, comp1.imag - comp2.imag);
     return Cn;
 }
+Complex_number operator*(const Complex_number &comp1, const Complex_number &comp2)
+{
+    // (a+bi)(c+di) = (ac-bd) + (ad+bc)i
+    Complex_number Cn(comp1.real * comp2.real - comp1.imag * comp2.imag,
+                      comp1.real * comp2.imag + comp1.imag * comp2.real);
+    return Cn;
+}
+Complex_number operator/(const Complex_number &comp1, const Complex_number &comp2)
+{
+    // (a+bi)/(c+di) = (ac+bd)/(c2+d2) + (bc-ad)/(c2+d2)i
+    int denominator = comp2.real * comp2.real + comp2.imag * comp2.imag;
+    if (denominator == 0)
+    {
+        std::cout << "错误: 除数不能为零" << std::endl;
+        return Complex_number(0, 0);
+    }
+    Complex_number Cn((comp1.real * comp2.real + comp1.imag * comp2.imag) / denominator,
+                      (comp1.imag * comp2.real - comp1.real * comp2.imag) / denominator);
+    return Cn;
+}
 
-static Complex_number parse_complex(const string &s) // 解释器解析复数字符串
+static Complex_number parse_complex(const string &s) // 解析复数表达式字符串
 {
     int real = 0, imag = 0;
-    int sigen = 1;            // 符号位，1表示正数，-1表示负数
-    int num = 0;              // 暂存区（当前累积的数字）
-    bool reading_real = true; // 当前读的是实部还是虚部
-    bool has_num = false;     // 是否已经读过数字（用于判断i前面有没有数字）
+    int sigen = 1;            // 符号位，1表示正，-1表示负
+    int num = 0;              // 暂存当前累积的数字
+    bool reading_real = true; // 当前在读实部还是虚部
+    bool has_num = false;     // 是否已读到数字，用于判断i前有没有数字
 
     for (size_t i = 0; i < s.size(); ++i)
     {
@@ -146,7 +166,7 @@ void Complex_number::display()
 {
     Complex_number result(0, 0);
     char oper;
-    cout << "按 R 开始计算，按 Q 退出: ";
+    cout << "按 R 开始运算，按 Q 退出: ";
     cin >> oper;
     cin.ignore(10000, '\n');
 
@@ -179,7 +199,7 @@ void Complex_number::display()
                     depth++;
                 else if (c == ')')
                     depth--;
-                else if ((c == '+' || c == '-') && depth == 0)
+                else if ((c == '+' || c == '-' || c == '*' || c == '/') && depth == 0)
                 {
                     pos = i;
                     break;
@@ -207,6 +227,12 @@ void Complex_number::display()
                 break;
             case '-':
                 result = result + left_comp - right_comp;
+                break;
+            case '*':
+                result = result + left_comp * right_comp;
+                break;
+            case '/':
+                result = result + left_comp / right_comp;
                 break;
             default:
                 cout << "Error: 无效的运算符" << endl;
