@@ -47,5 +47,7 @@ std::ostream& operator<<(std::ostream& out, const Complex_number& comp);
 Complex_number operator+(const Complex_number& comp1, const Complex_number& comp2);
 Complex_number operator-(const Complex_number& comp1, const Complex_number& comp2);
 
+//static int precedence(char op);
+//static vector<std::string> pares_real_expression(const std::string& line);
 static Complex_number parse_complex(const std::string& s);
 #endif // !COMPUTREAM_H

@@ -4,11 +4,160 @@
 #include <windows.h>
 #include <vector>
 #include <sstream>
+#include <stack>
 #include"computer.h"
 using namespace std;
 
 Real_number::Real_number(int r, int n, int o) :result(r), num(n), oper(o) { /*cout << "OK" << endl;*/ }
 Complex_number::Complex_number(int r, int i) :real(r), imag(i) { /*cout << "OK" << endl;*/ }
+
+static int precedence(char op)
+{
+    if (op == '^') return 3;
+    if (op == '*' || op == '/') return 2;
+    if (op == '+' || op == '-') return 1;
+    return 0;
+}
+
+static vector<string> pares_real_expression(const string& line)  //中缀表达式 -> 后缀表达式
+{
+    vector<string> output;                                       //后缀表达式队列
+    stack<char> op_stack;
+                                                  
+    auto is_oper = [](char c)                                    // Lambda 表达式
+        {
+            return c == '+' || c == '-' || c == '*' || c == '/' || c == '^';
+        };
+
+    for (size_t i = 0; i < line.size(); i++)
+    {
+        char c = line[i];
+        if (c == ' ') continue;
+
+        //数字处理
+        if (isdigit(c) || c == '.')
+        {
+            string num;
+            while (i < line.size() && (isdigit(line[i]) || line[i] == '.'))
+            {
+                num += line[i];
+                i++;
+            }
+            i--;
+            output.push_back(num);
+        }
+
+        //左括号
+        else if (c == '(')
+        {
+            op_stack.push(c);
+        }
+
+        //右括号
+        else if (c == ')')
+        {
+            while (!op_stack.empty() && op_stack.top()!= '(')
+            {
+                output.push_back(string(1, op_stack.top()));
+                op_stack.pop();
+            }
+            if (!op_stack.empty()) op_stack.pop();
+        }
+        //运算符
+        else if (is_oper(c))
+        {
+            if (c == '-' && (i == 0 || (!isdigit(line[i-1]) && isdigit(line[i-1]) != ')')))
+            {
+                string num;
+                num = '-';
+                i++;
+                while (i<line.size() && (isdigit(line[i]) || line[i] == '.'))
+                {
+                    num += line[i];
+                    i++;
+                }
+                i--;
+                output.push_back(num);
+                continue;
+            }
+
+            while (!op_stack.empty() && op_stack.top() != '(' && precedence(op_stack.top()) >= precedence(c))
+            {
+                output.push_back(string(1, op_stack.top()));
+                op_stack.pop();
+            }
+            op_stack.push(c);
+        }
+    }
+    
+    while (!op_stack.empty())
+    {
+        output.push_back(string(1, op_stack.top()));
+        op_stack.pop();
+    }
+
+    return output;
+}
+
+/*初始化空栈
+从左到有扫描表达式token
+遇到操作数直接压入栈
+遇到运算符弹出栈顶两个元素（先出为右操作数，后出为左操作数），执行对应运算，将结果压回栈
+扫描完毕后，栈中仅剩一个元素即为计算结果，若多于一个或少于一个及表达式非法
+*/
+
+static double rpnCount (const vector<string>& tokens)
+{
+    stack<double> token_stack;
+    double result = 0;
+    for (const string& token : tokens) //[3,4,2,*,+]
+    //for(size_t i=0; i<tokens.size(); i++)
+    {
+        //const string& token = tokens[i];
+        if (isdigit(token[0]) || (token[0] == '-' && token.size() > 1))
+            token_stack.push(stod(token));        // [3,4,2]
+        else
+        {
+            char c = token[0];               //*,+
+            double a = token_stack.top();    //右操作数
+            token_stack.pop();
+            
+            double b = token_stack.top();    //左操作数
+            token_stack.pop();
+            switch (c)
+            {
+            case'+':
+                result = b + a;               //3+8=11
+                token_stack.push(result);     //[11]
+                break;
+            case'-':
+                result = b - a;
+                token_stack.push(result);
+                break;
+            case'*':
+                result = b * a;                //2*4=8
+                token_stack.push(result);      //[3,8]
+                break;
+            case'/':
+                if (a == 0)
+                    throw runtime_error("Error: 除数不能为零！");
+                result = b / a;
+                token_stack.push(result);
+                break;
+            case'^':
+                result = pow(b, a);
+                token_stack.push(result);
+                break;
+            default:
+                throw runtime_error("Error：未知运算符");  //std::runtime_error
+            }
+        }
+    }
+    if (token_stack.size() != 1 || token_stack.empty())
+        throw runtime_error("Error: 错误的表达式！");
+
+    return token_stack.top();
+}
 
 void Real_number::display()
 {
@@ -16,33 +165,24 @@ void Real_number::display()
     char input;
     cout << "按 R 开始计算，按 Q 退出: ";
     cin >> input;
+    cin.ignore(10000, '\n');
 
     if (input == 'Q' || input == 'q') return; // 不要 exit，让程序自然结束
 
     if (input == 'R' || input == 'r')
     {
-        //cout << "请输入初始值: ";
-        cin >> result;
-        while (true)
-        {
-            cin >> oper;
-            if (oper == '=') break;
+        //cout << "请输入: ";
+        string line;
+        double result;
 
-            cin >> num;
-            switch (oper)
-            {
-            case '+': result += num; break;
-            case '-': result -= num; break;
-            case '*': result *= num; break;
-            case '/':
-                if (num != 0) result /= num;
-                else cout << "除数不能为0" << endl;
-                break;
-            default: cout << "Error" << endl; break;
-            }
-            //cout << "Result: " << result << endl;
+        getline(cin, line);
+        if (line == "= " || line == "=")
+        {
+            cout << "无效的表达式！" << endl;
+            return;
         }
-        cout << "End result: " << result << endl;
+        result = rpnCount(pares_real_expression(line));
+        cout << result << endl;
     }
 }
 
@@ -90,7 +230,7 @@ static Complex_number parse_complex(const string& s) // 解释器解析复数字符串
             if (has_num)
             {
                 if (reading_real) real = num * sigen;
-                else imag = num * sigen;
+                else imag = num * sigen;  //可以用于处理异常输入（2i+1）,(2i=3i) ...
             }
             // 重置状态
             sigen = (c == '+') ? 1 : -1;
@@ -153,6 +293,7 @@ void Complex_number::display()
             size_t pos = string::npos;
             for (size_t i = 0; i < line.size(); ++i) {
                 char c = line[i];
+                if (c == '=') continue;
                 if (c == '(') depth++;
                 else if (c == ')') depth--;
                 else if ((c == '+' || c == '-') && depth == 0) {
