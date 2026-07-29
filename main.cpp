@@ -13,7 +13,7 @@ int main()
 	Complex_number Cn;
 
 	char oper;
-	std::cout<<"按 R 进行实数运算，按 C 进行复数运算: ";
+	std::cout << "按 R 进行实数运算，按 C 进行复数运算: " <<;
 	std::cin >> oper;
 	if (oper == 'R' || oper == 'r')
 	{

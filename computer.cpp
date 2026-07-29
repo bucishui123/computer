@@ -50,7 +50,7 @@ void Real_number::display()
                 break;
             default:
                 cout << "Error" << endl;
-                break;
+                return;
             }
             // cout << "Result: " << result << endl;
         }
@@ -95,9 +95,10 @@ Complex_number operator/(const Complex_number &comp1, const Complex_number &comp
 {
     // (a+bi)/(c+di) = (ac+bd)/(c2+d2) + (bc-ad)/(c2+d2)i
     int denominator = comp2.real * comp2.real + comp2.imag * comp2.imag;
-    if (denominator == 0)
+
+    if (denominator == 0)   //分母为0-报错
     {
-        std::cout << "错误: 除数不能为零" << std::endl;
+        std::cout << "Error: 除数不能为零" << std::endl;
         return Complex_number(0, 0);
     }
     Complex_number Cn((comp1.real * comp2.real + comp1.imag * comp2.imag) / denominator,
