@@ -4,12 +4,8 @@
 #include <windows.h>
 #include <vector>
 #include <sstream>
-<<<<<<< HEAD
 #include <stack>
 #include"computer.h"
-=======
-#include "computer.h"
->>>>>>> main
 using namespace std;
 
 Real_number::Real_number(int r, int n, int o) : result(r), num(n), oper(o) { /*cout << "OK" << endl;*/ }
@@ -176,7 +172,6 @@ void Real_number::display()
 
     if (input == 'R' || input == 'r')
     {
-<<<<<<< HEAD
         //cout << "请输入: ";
         string line;
         double result;
@@ -186,39 +181,6 @@ void Real_number::display()
         {
             cout << "无效的表达式！" << endl;
             return;
-=======
-        // cout << "请输入初始值: ";
-        cin >> result;
-        while (true)
-        {
-            cin >> oper;
-            if (oper == '=')
-                break;
-
-            cin >> num;
-            switch (oper)
-            {
-            case '+':
-                result += num;
-                break;
-            case '-':
-                result -= num;
-                break;
-            case '*':
-                result *= num;
-                break;
-            case '/':
-                if (num != 0)
-                    result /= num;
-                else
-                    cout << "除数不能为0" << endl;
-                break;
-            default:
-                cout << "Error" << endl;
-                return;
-            }
-            // cout << "Result: " << result << endl;
->>>>>>> main
         }
         result = rpnCount(pares_real_expression(line));
         cout << result << endl;
@@ -290,15 +252,8 @@ static Complex_number parse_complex(const string &s) // 解析复数表达式字符串
         {
             if (has_num)
             {
-<<<<<<< HEAD
                 if (reading_real) real = num * sigen;
                 else imag = num * sigen;  //可以用于处理异常输入（2i+1）,(2i=3i) ...
-=======
-                if (reading_real)
-                    real = num * sigen;
-                else
-                    imag = num * sigen;
->>>>>>> main
             }
             // 重置状态
             sigen = (c == '+') ? 1 : -1;
@@ -368,19 +323,12 @@ void Complex_number::display()
             for (size_t i = 0; i < line.size(); ++i)
             {
                 char c = line[i];
-<<<<<<< HEAD
-                if (c == '=') continue;
-                if (c == '(') depth++;
-                else if (c == ')') depth--;
-                else if ((c == '+' || c == '-') && depth == 0) {
-=======
                 if (c == '(')
                     depth++;
                 else if (c == ')')
                     depth--;
                 else if ((c == '+' || c == '-' || c == '*' || c == '/') && depth == 0)
                 {
->>>>>>> main
                     pos = i;
                     break;
                 }
