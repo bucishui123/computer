@@ -182,8 +182,13 @@ void Real_number::display()
             cout << "无效的表达式！" << endl;
             return;
         }
-        result = rpnCount(pares_real_expression(line));
-        cout << result << endl;
+        try {
+            result = rpnCount(pares_real_expression(line));
+            cout << result << endl;
+        }
+        catch (const std::runtime_error& s) {
+            cout << s.what() << endl;
+        }
     }
 }
 
@@ -227,7 +232,7 @@ Complex_number operator/(const Complex_number &comp1, const Complex_number &comp
 
     if (denominator == 0)   //分母为0-报错
     {
-        std::cout << "Error: 除数不能为零" << std::endl;
+        throw runtime_error("除数不能为0！");
         return Complex_number(0, 0);
     }
     Complex_number Cn((comp1.real * comp2.real + comp1.imag * comp2.imag) / denominator,
@@ -344,31 +349,37 @@ void Complex_number::display()
             if (right.back() == '=')
                 right.pop_back(); // 去掉等号
 
-            Complex_number left_comp = parse_complex(left);
-            Complex_number right_comp = parse_complex(right);
-            char input_op = line[pos];
+            try {
+                Complex_number left_comp = parse_complex(left);
+                Complex_number right_comp = parse_complex(right);
+                char input_op = line[pos];
 
-            switch (input_op)
-            {
-            case '+':
-                result = result + left_comp + right_comp;
-                break;
-            case '-':
-                result = result + left_comp - right_comp;
-                break;
-            case '*':
-                result = result + left_comp * right_comp;
-                break;
-            case '/':
-                result = result + left_comp / right_comp;
-                break;
-            default:
-                cout << "Error: 无效的运算符" << endl;
-                continue;
+                switch (input_op)
+                {
+                case '+':
+                    result = result + left_comp + right_comp;
+                    break;
+                case '-':
+                    result = result + left_comp - right_comp;
+                    break;
+                case '*':
+                    result = result + left_comp * right_comp;
+                    break;
+                case '/':
+                    result = result + left_comp / right_comp;
+                    break;
+                default:
+                    cout << "Error: 无效的运算符" << endl;
+                    continue;
+                }
+                //cout << "当前结果: " << result << endl;
+                if (line.back() == '=')
+                    break;
             }
-            cout << "当前结果: " << result << endl;
-            if (line.back() == '=')
-                break;
+            catch (const runtime_error& s)
+            {
+                cout << "Error: " << s.what() << endl;
+            }
         }
         cout << "最终结果: " << result << endl;
     }
